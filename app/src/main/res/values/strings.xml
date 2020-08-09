@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">StayInTouch</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="stop_updates">STOP LOCATION UPDATES</string>
+    <string name="get_last_location">GET LAST LOCATION</string>
+    <string name="google_maps_API_key">AIzaSyCp2ocvIIPCVKrXK43C8FXai3sXkIGysKw"</string>
+    <string name="mail_label">мейл</string>
+    <string name="submit">submit</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="title_activity_auto_login">AutoLoginActivity</string>
+</resources>
