@@ -1,28 +1,57 @@
 package com.example.stayontouch.Entitie;
 
+import android.provider.Settings;
+
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class User {
-    private Long id;
+public class User implements Serializable {
+    private String androidId ;
     private String email;
     private Long login;
-    private String imei;
     private String password;
     private int age;
     private String firstName;
     private String lastName;
     private String phone;
+    private boolean watchEnabled;
+
+
+
     private double posx;
     private double posy;
+    private Set<User> iFollow = new HashSet<User>();
 
+    public Set<User> getiFollow() {
+        return iFollow;
+    }
+
+    public void setiFollow(Set<User> iFollow) {
+        this.iFollow = iFollow;
+    }
 
     private Set<User> followers = new HashSet<User>();
 
-    private Set<User> iFollow = new HashSet<User>();
+    public User(String androidId, String password) {
+        this.androidId = androidId;
+        this.password = password;
+    }
 
-    public User(String imei) {
-        this.imei = imei;
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public boolean isWatchEnabled() {
+        return watchEnabled;
+    }
+
+    public void setWatchEnabled(boolean watchEnabled) {
+        this.watchEnabled = watchEnabled;
+    }
+
+    public User(String androidId) {
+        this.androidId = androidId;
     }
 
     public User(String firstName, String lastName, String password, int age, String phone) {
@@ -75,9 +104,8 @@ public class User {
         return posy;
     }
 
-    public User(String name, String emale, int id, double posx, double posy) {
+    public User(String name, int id, double posx, double posy) {
         this.firstName = name;
-
         this.posx = posx;
         this.posy = posy;
     }

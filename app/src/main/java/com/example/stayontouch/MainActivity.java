@@ -2,6 +2,7 @@ package com.example.stayontouch;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,12 +12,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.Utils.ServiceChecker;
+
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private User user;
+
+
+    public void showToast(final String Text) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this,
+                        Text, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void onWatchingThisUser(){
+        if(user.isWatchEnabled()){
+            final ConstraintLayout constraintLayout = findViewById(R.id.constraintPersonalInfo);
+            constraintLayout.setVisibility(ConstraintLayout.VISIBLE);
+        }
+    }
 
 
     @Override
@@ -24,9 +48,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        Bundle bundle = getIntent().getExtras();
+        if(bundle!=null){
+            this.user = (User) bundle.getSerializable("user");
+        }
+
+        // todo draw all slave entity
+        dynamicUIDraw();
 
         ServiceChecker serviceChecker = new ServiceChecker(MainActivity.this);
 
+        onWatchingThisUser();
+        showToast("your unique id is: " + user.getAndroidId());
         if(serviceChecker.isServicesOK()){
 //            init();
         }
@@ -44,59 +77,48 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void dynamicUIDraw(){
-        final ScrollView scroll = findViewById(R.id.scrollMain);
 
-            final LinearLayout lm = (LinearLayout) findViewById(R.id.linearMain);
+        final LinearLayout lm = (LinearLayout) findViewById(R.id.linearMain);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-            //Create four
-            for(int j=0;j<=4;j++)
-            {
-                // Create LinearLayout
-                LinearLayout ll = new LinearLayout(this);
-                ll.setOrientation(LinearLayout.HORIZONTAL);
+        //Create four
+        for (User u : user.getiFollow()) {
+            // Create LinearLayout
+            LinearLayout ll = new LinearLayout(this);
+            ll.setOrientation(LinearLayout.HORIZONTAL);
 
-                // Create TextView
-                TextView product = new TextView(this);
-                product.setText(" Product"+j+"    ");
-                ll.addView(product);
+            // Create Button
+            final Button btn = new Button(this);
 
-                // Create TextView
-                TextView price = new TextView(this);
-                price.setText("  $"+j+"     ");
-                ll.addView(price);
+//            btn.setId();
 
-                // Create Button
-                final Button btn = new Button(this);
-                // Give button an ID
-                btn.setId(j+1);
-                btn.setText("Add To Cart");
-                // set the layoutParams on the button
-                btn.setLayoutParams(params);
+            btn.setText(u.getFirstName() + u.getLastName());
+            // set the layoutParams on the button
+            btn.setLayoutParams(params);
 
-                final int index = j;
-                // Set click listener for button
-                btn.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
 
-                        Log.i("TAG", "index :" + index);
+            // Set click listener for button
+            btn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
 
-                        Toast.makeText(getApplicationContext(),
-                                "Clicked Button Index :" + index,
-                                Toast.LENGTH_LONG).show();
+                    Log.i("TAG", "opening :" + btn.getText());
 
-                    }
-                });
+                    Toast.makeText(getApplicationContext(),
+                            "Clicked Button Index :" + btn.getText(),
+                            Toast.LENGTH_LONG).show();
 
-                //Add button to LinearLayout
-                ll.addView(btn);
-                //Add button to LinearLayout defined in XML
-                lm.addView(ll);
-            }
+                }
+            });
+
+            //Add button to LinearLayout
+            ll.addView(btn);
+            //Add button to LinearLayout defined in XML
+            lm.addView(ll);
         }
     }
+}
 
 
 

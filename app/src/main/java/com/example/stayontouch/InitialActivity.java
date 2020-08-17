@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -30,12 +31,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class InitialActivity extends AppCompatActivity {
-    private String imei;
+    private String androidId ;
     private boolean connected;
+    User user;
     @BindView(R.id.connectionProgressBar)
     ProgressBar progressBar;
     private static final String TAG = "Initial";
     private static String loginUrl = "https://stay-in-touch-server.herokuapp.com/";
+
     Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(loginUrl)
             .addConverterFactory(GsonConverterFactory.create());
@@ -45,6 +48,7 @@ public class InitialActivity extends AppCompatActivity {
     private void onConnectionResult(boolean result){
         if(result){
             Intent intent = new Intent(InitialActivity.this, MainActivity.class);
+            intent.putExtra("user", user);
             startActivity(intent);
             finish();
         }
@@ -54,27 +58,12 @@ public class InitialActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("HardwareIds")
-    public static String getDeviceIMEI(Activity activity) {
-
-        String deviceUniqueIdentifier = null;
-        TelephonyManager tm = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
-        if (null != tm) {
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
-            else
-                deviceUniqueIdentifier = tm.getDeviceId();
-            if (null == deviceUniqueIdentifier || 0 == deviceUniqueIdentifier.length())
-                deviceUniqueIdentifier = "0";
-        }
-        return deviceUniqueIdentifier;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        imei = TelephonyServiceChecker.getDeviceIMEI();
+        androidId =  android.provider.Settings.System.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         new InitialActivity.LoginUser().execute();
         setContentView(R.layout.activity_initial);
     }
@@ -89,9 +78,9 @@ public class InitialActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             UserInterface userInterface = retrofit.create(UserInterface.class);
 
-            String imei = "032841231823123";
-            User user = new User(imei);
-            Call<User> call = userInterface.logInUser(imei);
+
+            user = new User(androidId);
+            Call<User> call = userInterface.logInUser(androidId);
 
             try {
                 retrofit2.Response<User> response = call.execute();
