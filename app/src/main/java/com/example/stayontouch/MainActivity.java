@@ -1,6 +1,7 @@
 package com.example.stayontouch;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -14,16 +15,24 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.stayontouch.Dialogs.AddSubordinateDialog;
 import com.example.stayontouch.Entitie.User;
+import com.example.stayontouch.Service.MyService;
 import com.example.stayontouch.Utils.ServiceChecker;
+import com.example.stayontouch.web.RetrofitWrapper;
+import com.example.stayontouch.web.UserInterface;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Iterator;
 
-public class MainActivity extends AppCompatActivity {
+import retrofit2.Call;
+
+public class MainActivity extends AppCompatActivity implements AddSubordinateDialog.AddSubordinateDialogListener {
 
     private static final String TAG = "MainActivity";
     private User user;
-
+    private boolean result;
 
     public void showToast(final String Text) {
         this.runOnUiThread(new Runnable() {
@@ -36,10 +45,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onWatchingThisUser(){
-        if(user.isWatchEnabled()){
-            final ConstraintLayout constraintLayout = findViewById(R.id.constraintPersonalInfo);
-            constraintLayout.setVisibility(ConstraintLayout.VISIBLE);
-        }
+
+        final ConstraintLayout constraintLayout = findViewById(R.id.constraintPersonalInfo);
+        constraintLayout.setVisibility(ConstraintLayout.VISIBLE);
+
+        final TextView login = findViewById(R.id.id);
+        final TextView password = findViewById(R.id.password);
+
+//        todo implement on watch mechanic
+        Log.d(TAG,user.toString());
+
+        login.setText("Login: "+user.getId().toString());
+        password.setText("Password: "+ user.getPassword());
+
+        //todo starting service
+//        startService(new Intent(getApplicationContext(),MyService.class));
     }
 
 
@@ -55,26 +75,28 @@ public class MainActivity extends AppCompatActivity {
 
         // todo draw all slave entity
         dynamicUIDraw();
+        setAddSubordinateButtonClickListener();
 
         ServiceChecker serviceChecker = new ServiceChecker(MainActivity.this);
 
         onWatchingThisUser();
         showToast("your unique id is: " + user.getAndroidId());
+//        startService(new Intent(getApplicationContext(),MyService.class));
         if(serviceChecker.isServicesOK()){
 //            init();
         }
     }
 
-//    private void init(){
-//        Button btnMap = (Button) findViewById(R.id.ok_button);
-//        btnMap.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//    }
+    private void setAddSubordinateButtonClickListener(){
+        Button btn = (Button) findViewById(R.id.addSubordinate);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddSubordinateDialog dialog = new AddSubordinateDialog();
+                dialog.show(getSupportFragmentManager(),"dialog");
+            }
+        });
+    }
 
     private void dynamicUIDraw(){
 
@@ -84,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         //Create four
-        for (User u : user.getiFollow()) {
+        for (User u : user.getSubordinates()) {
             // Create LinearLayout
             LinearLayout ll = new LinearLayout(this);
             ll.setOrientation(LinearLayout.HORIZONTAL);
@@ -118,7 +140,51 @@ public class MainActivity extends AppCompatActivity {
             lm.addView(ll);
         }
     }
+
+    @Override
+    public void addSubordinate(Long id, String password) {
+        if(!id.equals(this.user.getId())){
+            User sub = new User(id, password);
+            Log.d(TAG,"id + pas : "+ id+" "+ password);
+
+            this.user.getSubordinates().add(sub);
+            Log.d("subs",user.toString());
+
+
+            new SubordinateToServer().execute();
+        }
+        else
+            showToast("sooo, you wanna subscribe for yourself haha))");
+
+
+    }
+
+    private class SubordinateToServer extends AsyncTask<Void, Void, Void> {
+
+        private boolean result;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            RetrofitWrapper wrapper = new RetrofitWrapper();
+            user = wrapper.addSubordinates(user);
+            if(user!=null)
+                result = true;
+            else
+                result = false;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onConnectionResult(result);
+        }
+    }
+
+    private void onConnectionResult(boolean result) {
+        if(result)
+            dynamicUIDraw();
+    }
+
+
 }
-
-
-

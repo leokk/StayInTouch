@@ -16,4 +16,8 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_auto_login">AutoLoginActivity</string>
+    <string name="addSubordinate">ADD</string>
+    <string name="password">Password</string>
+    <string name="subordinate_id">Subbordinate Id</string>
+    <string name="service_name">Stay In Touch</string>
 </resources>

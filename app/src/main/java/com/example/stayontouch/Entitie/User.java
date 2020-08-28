@@ -3,13 +3,16 @@ package com.example.stayontouch.Entitie;
 import android.provider.Settings;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class User implements Serializable {
     private String androidId ;
     private String email;
     private Long login;
+    private Long id;
     private String password;
     private int age;
     private String firstName;
@@ -18,24 +21,100 @@ public class User implements Serializable {
     private boolean watchEnabled;
 
 
-
     private double posx;
     private double posy;
-    private Set<User> iFollow = new HashSet<User>();
+    private List<User> subordinates = new ArrayList<>();
 
-    public Set<User> getiFollow() {
-        return iFollow;
-    }
 
-    public void setiFollow(Set<User> iFollow) {
-        this.iFollow = iFollow;
-    }
-
-    private Set<User> followers = new HashSet<User>();
 
     public User(String androidId, String password) {
         this.androidId = androidId;
         this.password = password;
+    }
+
+    public User(Long id, String password) {
+        this.id = id;
+        this.password = password;
+    }
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "androidId='" + androidId + '\'' +
+                ", email='" + email + '\'' +
+                ", login=" + login +
+                ", id=" + id +
+                ", password='" + password + '\'' +
+                ", age=" + age +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", watchEnabled=" + watchEnabled +
+                ", posx=" + posx +
+                ", posy=" + posy +
+                ", subordinates=" + subordinates +
+                '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getLogin() {
+        return login;
+    }
+
+    public void setLogin(Long login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setPosx(double posx) {
+        this.posx = posx;
+    }
+
+    public void setPosy(double posy) {
+        this.posy = posy;
+    }
+
+    public List<User> getSubordinates() {
+        return subordinates;
+    }
+
+    public void setSubordinates(List<User> subordinates) {
+        this.subordinates = subordinates;
     }
 
     public String getAndroidId() {

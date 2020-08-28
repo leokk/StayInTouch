@@ -44,6 +44,12 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".Service.MyService"
+            android:icon="@drawable/logo"
+            android:label="@string/service_name">
+        </service>
+
     </application>
 
 </manifest>

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -20,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.Utils.ServiceChecker;
 import com.example.stayontouch.Utils.TelephonyServiceChecker;
+import com.example.stayontouch.web.RetrofitWrapper;
 import com.example.stayontouch.web.UserInterface;
 import com.google.gson.Gson;
 
@@ -72,31 +74,15 @@ public class InitialActivity extends AppCompatActivity {
     private class LoginUser extends AsyncTask<Void, Void, Void> {
 
         private boolean result;
-        public LoginUser() { }
 
         @Override
         protected Void doInBackground(Void... params) {
-            UserInterface userInterface = retrofit.create(UserInterface.class);
-
-
-            user = new User(androidId);
-            Call<User> call = userInterface.logInUser(androidId);
-
-            try {
-                retrofit2.Response<User> response = call.execute();
-                Log.d(TAG, "response is: "+ new Gson().toJson(response.body()));
-                if (response.isSuccessful()) {
-                    result = true;
-                    Log.d(TAG, "good");
-                }
-
-
-            } catch (IOException e) {
+            RetrofitWrapper wrapper = new RetrofitWrapper();
+            user = wrapper.login(new User(androidId));
+            if(user!=null)
+                result = true;
+            else
                 result = false;
-                Log.d(TAG, "bad");
-                Log.d(TAG, e.getMessage());
-                e.printStackTrace();
-            }
             return null;
         }
 

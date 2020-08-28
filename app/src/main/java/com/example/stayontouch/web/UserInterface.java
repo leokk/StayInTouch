@@ -16,7 +16,16 @@ public interface UserInterface {
 
     @POST("login")
     @Headers("Content-Type: application/json")
-    Call<User> logInUser(@Body String imei);
+    Call<User> logInUser(@Body User user);
+
+
+    @POST("follow")
+    @Headers("Content-Type: application/json")
+    Call<User>addSubordinates(@Body User user);
+
+    @POST("coords")
+    @Headers("Content-Type: application/json")
+    Call<String>sendCoordinates(@Body User user);
 
     @GET("T")
     @Headers("Content-Type: application/json")
