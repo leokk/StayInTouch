@@ -1,4 +1,4 @@
-package com.example.stayontouch;
+package com.example.stayontouch.Activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.stayontouch.Entitie.User;
+import com.example.stayontouch.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,6 +25,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.jetbrains.annotations.NotNull;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -59,13 +62,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private User fake;
-
+    private User sub;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fake = new User("ПIDAR ОБНАРУЖЕН!!!", 34.23, 36.12);
-        setContentView(R.layout.activity_maps);
 
+        Bundle bundle = getIntent().getExtras();
+
+        fake = new User("Location", 34.23, 36.12);
+        if (bundle != null) {
+            this.sub = (User) bundle.getSerializable("user");
+            sub.setPosx(30.20);
+            sub.setPosy(60.2053);
+            sub.setFirstName("your sub)");
+        }
+
+        setContentView(R.layout.activity_maps);
         getLocationPermission();
     }
 
@@ -87,7 +99,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Log.d(TAG, "ACCURACY = " + currentLocation.getAccuracy());
 //                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
 //                                    DEFAULT_ZOOM);
-                            moveCamera(new LatLng(fake.getPosx(), fake.getPosy()), fake.getFirstName(), DEFAULT_ZOOM);
+                            moveCamera(new LatLng(sub.getPosx(), sub.getPosy()), sub.getFirstName(), DEFAULT_ZOOM);
 
                         } else {
                             Log.d(TAG, "onComplete: current location is null");

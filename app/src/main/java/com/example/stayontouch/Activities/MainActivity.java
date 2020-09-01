@@ -1,14 +1,12 @@
-package com.example.stayontouch;
+package com.example.stayontouch.Activities;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,16 +15,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.stayontouch.Dialogs.AddSubordinateDialog;
 import com.example.stayontouch.Entitie.User;
-import com.example.stayontouch.Service.MyService;
+import com.example.stayontouch.R;
 import com.example.stayontouch.Utils.ServiceChecker;
 import com.example.stayontouch.web.RetrofitWrapper;
-import com.example.stayontouch.web.UserInterface;
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.util.Iterator;
-
-import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity implements AddSubordinateDialog.AddSubordinateDialogListener {
 
@@ -98,6 +89,13 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
         });
     }
 
+    private void redrawSubs(){
+        final LinearLayout lm = findViewById(R.id.linearMain);
+        lm.removeAllViews();
+        dynamicUIDraw();
+    }
+
+
     private void dynamicUIDraw(){
 
         final LinearLayout lm = (LinearLayout) findViewById(R.id.linearMain);
@@ -116,16 +114,19 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
 //            btn.setId();
 
-            btn.setText(u.getFirstName() + u.getLastName());
+            btn.setText(u.getFirstName() + " BAZUKA " + u.getLastName());
             // set the layoutParams on the button
             btn.setLayoutParams(params);
-
 
             // Set click listener for button
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
 
                     Log.i("TAG", "opening :" + btn.getText());
+
+                    Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                    intent.putExtra("user", user);
+                    startActivity(intent);
 
                     Toast.makeText(getApplicationContext(),
                             "Clicked Button Index :" + btn.getText(),
@@ -143,20 +144,27 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
     @Override
     public void addSubordinate(Long id, String password) {
+        boolean isok = true;
         if(!id.equals(this.user.getId())){
             User sub = new User(id, password);
             Log.d(TAG,"id + pas : "+ id+" "+ password);
 
-            this.user.getSubordinates().add(sub);
-            Log.d("subs",user.toString());
-
-
-            new SubordinateToServer().execute();
+            for(User u:user.getSubordinates()){
+                if(u.getId().equals(sub.getId())){
+                    showToast("you have already subscribed for dat guy"+ u.getId());
+                    isok = false;
+                }
+            }
+            if(isok){
+                this.user.getSubordinates().add(sub);
+                Log.d("subs",user.toString());
+                new SubordinateToServer().execute();
+            }
         }
         else
-            showToast("sooo, you wanna subscribe for yourself haha))");
-
-
+        {
+            showToast("sooo, u wanna subscribe for yourself haha))");
+        }
     }
 
     private class SubordinateToServer extends AsyncTask<Void, Void, Void> {
@@ -167,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
         protected Void doInBackground(Void... params) {
             RetrofitWrapper wrapper = new RetrofitWrapper();
             user = wrapper.addSubordinates(user);
-            if(user!=null)
+            if(user.getMessage()==0)
                 result = true;
             else
                 result = false;
@@ -182,8 +190,17 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
     }
 
     private void onConnectionResult(boolean result) {
-        if(result)
-            dynamicUIDraw();
+        if(result){
+            redrawSubs();
+            return;
+        }
+
+        else if(user.getMessage()==409){
+            showToast("bad credentials, try again");
+            user.setMessage(0);
+        }
+
+        user.getSubordinates().remove(user.getSubordinates().size()-1);
     }
 
 

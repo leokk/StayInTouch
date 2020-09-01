@@ -38,8 +38,6 @@ public class RetrofitWrapper {
                 Log.d(login, "good");
                 return user;
             }
-
-
         } catch (IOException e) {
             Log.d(login, "bad");
             Log.d(login, e.getMessage());
@@ -61,7 +59,10 @@ public class RetrofitWrapper {
                 Log.d(subs, "good");
                 return user;
             }
-
+            else{
+                user.setMessage(response.code());
+                return user ;
+            }
 
         } catch (RuntimeException | IOException e) {
             Log.d(subs, "bad");

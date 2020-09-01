@@ -1,34 +1,19 @@
-package com.example.stayontouch;
+package com.example.stayontouch.Activities;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 import com.example.stayontouch.Entitie.User;
-import com.example.stayontouch.Utils.ServiceChecker;
-import com.example.stayontouch.Utils.TelephonyServiceChecker;
+import com.example.stayontouch.R;
 import com.example.stayontouch.web.RetrofitWrapper;
-import com.example.stayontouch.web.UserInterface;
-import com.google.gson.Gson;
-
-import java.io.IOException;
 
 import butterknife.BindView;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

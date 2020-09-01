@@ -24,7 +24,7 @@ public class User implements Serializable {
     private double posx;
     private double posy;
     private List<User> subordinates = new ArrayList<>();
-
+    private int message;
 
 
     public User(String androidId, String password) {
@@ -55,6 +55,14 @@ public class User implements Serializable {
                 ", posy=" + posy +
                 ", subordinates=" + subordinates +
                 '}';
+    }
+
+    public int getMessage() {
+        return message;
+    }
+
+    public void setMessage(int message) {
+        this.message = message;
     }
 
     public Long getId() {

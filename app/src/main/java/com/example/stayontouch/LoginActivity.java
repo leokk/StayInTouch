@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.stayontouch.Activities.MainActivity;
 import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.web.UserInterface;
 
