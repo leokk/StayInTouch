@@ -18,10 +18,15 @@ public interface UserInterface {
     @Headers("Content-Type: application/json")
     Call<User> logInUser(@Body User user);
 
+    @POST("update")
+    @Headers("Content-Type: application/json")
+    Call<User>updateUser(@Body User user);
 
     @POST("follow")
     @Headers("Content-Type: application/json")
     Call<User>addSubordinates(@Body User user);
+
+
 
     @POST("coords")
     @Headers("Content-Type: application/json")

@@ -10,6 +10,7 @@ import java.io.IOException;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitWrapper {
     private static String mainUrl = "https://stay-in-touch-server.herokuapp.com/";
@@ -22,9 +23,10 @@ public class RetrofitWrapper {
     public RetrofitWrapper( ) {
 
         builder.baseUrl(mainUrl)
-            .addConverterFactory(GsonConverterFactory.create());
+                .addConverterFactory(GsonConverterFactory.create());
         retrofit = builder.build();
     }
+
 
     public User login(User user){
         UserInterface userInterface = retrofit.create(UserInterface.class);
@@ -41,6 +43,49 @@ public class RetrofitWrapper {
         } catch (IOException e) {
             Log.d(login, "bad");
             Log.d(login, e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User upd(User user){
+        UserInterface userInterface = retrofit.create(UserInterface.class);
+        Call<User> call = userInterface.updateUser(user);
+        try {
+            retrofit2.Response<User> response = call.execute();
+            Log.d(login, "response is: "+ new Gson().toJson(response.body()));
+            if (response.isSuccessful()) {
+                user = response.body();
+                Log.d(login,"user is: " + user.toString());
+                Log.d(login, "good");
+                return user;
+            }
+        } catch (IOException e) {
+            Log.d(login, "bad");
+            Log.d(login, e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User updateUser(User user){
+
+        UserInterface userInterface = retrofit.create(UserInterface.class);
+        Call<User> call = userInterface.updateUser(user);
+        try {
+            retrofit2.Response<User> response = call.execute();
+            Log.d(subs, "response is: "+ response.body());
+            if (response.isSuccessful()) {
+                Log.d(subs,"user is: " + response.body());
+                return response.body();
+            }
+            else{
+                user.setMessage(response.code());
+                return user;
+            }
+
+        } catch (RuntimeException | IOException e) {
+            Log.d(subs, "bad");
             e.printStackTrace();
         }
         return null;

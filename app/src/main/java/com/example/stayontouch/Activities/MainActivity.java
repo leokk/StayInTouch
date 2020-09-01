@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
 //        todo implement on watch mechanic
         Log.d(TAG,user.toString());
-
         login.setText("Login: "+user.getId().toString());
         password.setText("Password: "+ user.getPassword());
 

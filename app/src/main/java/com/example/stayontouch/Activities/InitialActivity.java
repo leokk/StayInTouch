@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.R;
+import com.example.stayontouch.Utils.Preferences;
 import com.example.stayontouch.web.RetrofitWrapper;
 
 import butterknife.BindView;
@@ -24,17 +25,10 @@ public class InitialActivity extends AppCompatActivity {
     @BindView(R.id.connectionProgressBar)
     ProgressBar progressBar;
     private static final String TAG = "Initial";
-    private static String loginUrl = "https://stay-in-touch-server.herokuapp.com/";
-
-    Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl(loginUrl)
-            .addConverterFactory(GsonConverterFactory.create());
-    Retrofit retrofit = builder.build();
-
 
     private void onConnectionResult(boolean result){
         if(result){
-            Intent intent = new Intent(InitialActivity.this, MainActivity.class);
+            Intent intent = new Intent(InitialActivity.this, ProfileActivity.class);
             intent.putExtra("user", user);
             startActivity(intent);
             finish();
