@@ -1,22 +1,25 @@
 package com.example.stayontouch.Utils;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.stayontouch.Activities.MainActivity;
+import com.example.stayontouch.Activities.ProfileActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 public class ServiceChecker extends AppCompatActivity {
-    private static final String TAG = "Service";
+    private static final String TAG = "MapActivity";
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    private MainActivity content;
+    private Activity content;
 
-    public ServiceChecker(MainActivity content) {
+    public ServiceChecker(Activity content) {
         this.content = content;
     }
 
@@ -27,7 +30,7 @@ public class ServiceChecker extends AppCompatActivity {
 
         if (available == ConnectionResult.SUCCESS) {
             //everything is fine and the user can make map requests
-            Log.d(TAG, "isServicesOK: " + "");
+            Log.d(TAG, "isServicesOK: " + "returns true");
             return true;
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             //an error occured but we can resolve it

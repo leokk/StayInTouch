@@ -20,12 +20,6 @@ public class ProfileSettingsActivity extends AppCompatActivity {
     EditText fName ;
     EditText lName ;
     EditText pass ;
-    private UserUpdateListener listener;
-
-    public void update(User user) {
-        listener.update(user);
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

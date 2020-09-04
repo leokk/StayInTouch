@@ -28,9 +28,9 @@ public interface UserInterface {
 
 
 
-    @POST("coords")
+    @POST("coordinates")
     @Headers("Content-Type: application/json")
-    Call<String>sendCoordinates(@Body User user);
+    Call<Void>sendCoordinates(@Body User user);
 
     @GET("T")
     @Headers("Content-Type: application/json")

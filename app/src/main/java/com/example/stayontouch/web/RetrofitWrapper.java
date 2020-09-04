@@ -16,6 +16,7 @@ public class RetrofitWrapper {
     private static String mainUrl = "https://stay-in-touch-server.herokuapp.com/";
     private static String login = "login";
     private static String subs = "subs";
+    private static String coords = "coords";
 //    private User user;
     Retrofit.Builder builder = new Retrofit.Builder();
     Retrofit retrofit;
@@ -27,30 +28,26 @@ public class RetrofitWrapper {
         retrofit = builder.build();
     }
 
+    public void sendLocation(double lat, double lon,String androidId){
+        UserInterface userInterface = retrofit.create(UserInterface.class);
+        User user = new User(androidId);
+        user.setLocation(lat, lon);
+        Call<Void> call = userInterface.sendCoordinates(user);
+        try {
+            retrofit2.Response<Void> response = call.execute();
+            if (response.isSuccessful()) {
+                Log.d(coords, "code is : " + response.code());
+            }
+        } catch (IOException e) {
+            Log.d(coords, "bad");
+            Log.d(coords, e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public User login(User user){
         UserInterface userInterface = retrofit.create(UserInterface.class);
         Call<User> call = userInterface.logInUser(user);
-        try {
-            retrofit2.Response<User> response = call.execute();
-            Log.d(login, "response is: "+ new Gson().toJson(response.body()));
-            if (response.isSuccessful()) {
-                user = response.body();
-                Log.d(login,"user is: " + user.toString());
-                Log.d(login, "good");
-                return user;
-            }
-        } catch (IOException e) {
-            Log.d(login, "bad");
-            Log.d(login, e.getMessage());
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public User upd(User user){
-        UserInterface userInterface = retrofit.create(UserInterface.class);
-        Call<User> call = userInterface.updateUser(user);
         try {
             retrofit2.Response<User> response = call.execute();
             Log.d(login, "response is: "+ new Gson().toJson(response.body()));

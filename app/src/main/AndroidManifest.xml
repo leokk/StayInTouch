@@ -6,9 +6,10 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
@@ -19,7 +20,61 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.ProfileSettingsActivity"></activity>
+        <activity android:name=".Activities.ProfileSettingsActivity" />
+
+
+        <receiver
+            android:name=".Service.Restarter"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="restartservice" />
+            </intent-filter>
+        </receiver>
+
+
+        <receiver
+            android:name=".Service.SensorRestarterBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="com.example.stayontouch.onDestroy" />
+            </intent-filter>
+        </receiver>
+
+        <!-- RECEIVERS -->
+        <receiver android:name=".Service.BootUpReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+
+        <!--Service-->
+        <service
+            android:launchMode="singleTop"
+            android:process=":gpsProcess"
+            android:name=".Service.MyService"
+            android:icon="@drawable/logo"
+            android:label="@string/service_name" />
+
+        <service
+            android:name=".Service.YourService"
+            android:icon="@drawable/logo"
+            android:enabled="true"
+            android:label="@string/service_name" />
+
+        <service
+            android:process=":gpsProcess"
+            android:name=".Service.tst"
+            android:icon="@drawable/logo"
+            android:label="@string/service_name" />
+
+
         <activity
             android:name=".Activities.SettingsActivity"
             android:label="@string/title_activity_settings" />
@@ -35,6 +90,7 @@
         <activity android:name=".Activities.MapsActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".SignupActivity" />
+        <activity android:name=".Activities.ProfileActivity" />
         <activity android:name=".Activities.InitialActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,12 +98,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.ProfileActivity" />
-
-        <service
-            android:name=".Service.MyService"
-            android:icon="@drawable/logo"
-            android:label="@string/service_name" />
     </application>
 
 </manifest>

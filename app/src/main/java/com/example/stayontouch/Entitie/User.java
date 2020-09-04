@@ -109,6 +109,11 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
+    public void setLocation(double lat, double lon){
+        this.posx = lat;
+        this.posy = lon;
+    }
+
     public void setPosx(double posx) {
         this.posx = posx;
     }
