@@ -9,7 +9,7 @@ public class BootUpReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context c, Intent i) {
-        Intent gpsIntent = new Intent(c, GPSTracker.class);
+        Intent gpsIntent = new Intent(c, YourService.class);
 
 
         // Add putExtras() or look at parceables to see if there is anything we need to do here

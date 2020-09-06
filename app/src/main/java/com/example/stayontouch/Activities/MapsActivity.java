@@ -26,8 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import org.jetbrains.annotations.NotNull;
-
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
@@ -61,20 +59,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private User fake;
     private User sub;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle bundle = getIntent().getExtras();
-
-        fake = new User("Location", 34.23, 36.12);
         if (bundle != null) {
             this.sub = (User) bundle.getSerializable("user");
-            sub.setPosx(30.20);
-            sub.setPosy(60.2053);
-            sub.setFirstName("your sub)");
         }
 
         setContentView(R.layout.activity_maps);
@@ -99,7 +90,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Log.d(TAG, "ACCURACY = " + currentLocation.getAccuracy());
 //                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
 //                                    DEFAULT_ZOOM);
-                            moveCamera(new LatLng(sub.getPosx(), sub.getPosy()), sub.getFirstName(), DEFAULT_ZOOM);
+                            moveCamera(new LatLng(sub.getPosx(), sub.getPosy()), sub.getFirstName());
 
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
@@ -118,13 +109,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
-    private void moveCamera(LatLng latLng, String title, float zoom) {
+    private void moveCamera(LatLng latLng, String title) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, MapsActivity.DEFAULT_ZOOM));
         MarkerOptions options = new MarkerOptions().
-                position(latLng).title(title);
+                position(latLng).title(title).draggable(false);
         mMap.addMarker(options);
-
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setMapToolbarEnabled(false);
     }
@@ -132,7 +122,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initMap() {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
+        
         mapFragment.getMapAsync(MapsActivity.this);
     }
 

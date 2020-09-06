@@ -23,6 +23,8 @@
         <activity android:name=".Activities.ProfileSettingsActivity" />
 
 
+
+        <!-- RECEIVERS -->
         <receiver
             android:name=".Service.Restarter"
             android:enabled="true"
@@ -32,18 +34,6 @@
             </intent-filter>
         </receiver>
 
-
-        <receiver
-            android:name=".Service.SensorRestarterBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:label="RestartServiceWhenStopped">
-            <intent-filter>
-                <action android:name="com.example.stayontouch.onDestroy" />
-            </intent-filter>
-        </receiver>
-
-        <!-- RECEIVERS -->
         <receiver android:name=".Service.BootUpReceiver"
             android:enabled="true" >
             <intent-filter>
@@ -66,12 +56,6 @@
             android:name=".Service.YourService"
             android:icon="@drawable/logo"
             android:enabled="true"
-            android:label="@string/service_name" />
-
-        <service
-            android:process=":gpsProcess"
-            android:name=".Service.tst"
-            android:icon="@drawable/logo"
             android:label="@string/service_name" />
 
 

@@ -1,33 +1,32 @@
 package com.example.stayontouch.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.R;
-import com.example.stayontouch.Service.MyService;
-import com.example.stayontouch.Service.Restarter;
-import com.example.stayontouch.Service.ServiceNoDelay;
 import com.example.stayontouch.Service.YourService;
-import com.example.stayontouch.Service.tst;
 import com.example.stayontouch.Utils.ServiceChecker;
+import com.example.stayontouch.web.RetrofitWrapper;
 
 public class ProfileActivity extends AppCompatActivity {
-    private User user = null;
+    User user = null;
+    User FF = null;
     private static final String TAG = "MapActivity";
     private YourService mSensorService;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -41,10 +40,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         Bundle bundle = getIntent().getExtras();
-        if(bundle!=null){
+        if (bundle != null) {
             this.user = (User) bundle.getSerializable("user");
         }
-        if(!new ServiceChecker(this).isServicesOK())
+        if (!new ServiceChecker(this).isServicesOK())
             getLocationPermission();
         setOnclickListeners();
         startServiceOnce();
@@ -52,7 +51,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    private void setOnclickListeners(){
+    private void setOnclickListeners() {
         Button settings = findViewById(R.id.toSettings);
         Button account = findViewById(R.id.toAccountSettings);
         Button subs = findViewById(R.id.getSubs);
@@ -71,7 +70,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, ProfileSettingsActivity.class);
                 intent.putExtra("user", user);
-                startActivityForResult(intent, 1);;
+                startActivityForResult(intent, 2);
+
             }
         });
         subs.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 intent.putExtra("user", user);
-                startActivityForResult(intent,1);
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -88,49 +88,34 @@ public class ProfileActivity extends AppCompatActivity {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
-                Log.d ("MyService", "Running");
+                Log.d("MyService", "Running");
                 return true;
             }
         }
-        Log.d ("MyService", "Not running");
+        Log.d("MyService", "Not running");
         return false;
     }
 
-    private void startServiceOnce(){
-        if(!isMyServiceRunning(YourService.class)){
+    private void startServiceOnce() {
+        if (!isMyServiceRunning(YourService.class)) {
             mSensorService = new YourService(this);
             Intent mServiceIntent = new Intent(getApplicationContext(), mSensorService.getClass());
             startService(mServiceIntent);
         }
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        //stopService(mServiceIntent);
-//        if(isMyServiceRunning(YourService.class)){
-////            stopService(mSensorService);
-//        }
-//        Intent broadcastIntent = new Intent();
-//        broadcastIntent.setAction("restartservice");
-//        broadcastIntent.setClass(this, Restarter.class);
-//        this.sendBroadcast(broadcastIntent);
-//        super.onDestroy();
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.d("userrr","AAAAAAAAAAAAA");
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                boolean old = user.isWatchEnabled();
-                this.user = (User) data.getSerializableExtra("user");
-                if(!old && this.user.isWatchEnabled()){
-                    Intent service = new Intent(getApplicationContext(), MyService.class);
-                    service.putExtra("user",user);
-                    startService(service);
-                }
-
+            if (resultCode == Activity.RESULT_OK) {
+                Log.d("userrr","FFFFFFFFFFFFFFFFFFFFFF");
+                User neww = (User) data.getSerializableExtra("user");
+//                if (this.user.equals(neww)) {
+                    this.user = neww;
+                    new UserUpdater(neww).execute();
+//                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
@@ -138,8 +123,32 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private class UserUpdater extends AsyncTask<Void, Void, User> {
 
-    private void  getLocationPermission() {
+        User requestUser;
+
+        public UserUpdater(User user) {
+            this.requestUser = user;
+        }
+
+        @Override
+        protected void onPostExecute(User u) {
+            Log.d("user",u.toString());
+            user = u;
+        }
+
+        @Override
+        protected User doInBackground(Void... params) {
+            User u = new RetrofitWrapper().updateUser(user);
+
+            if(u!=null && u.getMessage()==0)
+                return user;
+            return null ;
+        }
+    }
+
+
+    private void getLocationPermission() {
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -149,7 +158,7 @@ public class ProfileActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
-               //todo some stuff
+                //todo some stuff
             } else {
                 ActivityCompat.requestPermissions(this,
                         permissions,

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 //        todo implement on watch mechanic
         Log.d(TAG,user.toString());
         login.setText("Login: "+user.getId().toString());
-        password.setText("Password: "+ user.getPassword());
 
         //todo starting service
 //        startService(new Intent(getApplicationContext(),MyService.class));
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
     }
 
     private void setAddSubordinateButtonClickListener(){
-        Button btn = (Button) findViewById(R.id.addSubordinate);
+        ImageButton btn = (ImageButton) findViewById(R.id.addSubordinate);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
 //            btn.setId();
 
-            btn.setText(u.getFirstName() + " BAZUKA " + u.getLastName());
+            btn.setText(u.getFirstName() + "   " + u.getLastName());
             // set the layoutParams on the button
             btn.setLayoutParams(params);
 
