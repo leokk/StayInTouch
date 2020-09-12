@@ -3,11 +3,14 @@ package com.example.stayontouch.Activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,22 +21,34 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.stayontouch.Dialogs.AddSubordinateDialog;
 import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.R;
+import com.example.stayontouch.Service.MyService;
 import com.example.stayontouch.Service.YourService;
+import com.example.stayontouch.Utils.Constants;
+import com.example.stayontouch.Utils.Preferences;
 import com.example.stayontouch.Utils.ServiceChecker;
 import com.example.stayontouch.web.RetrofitWrapper;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ProfileActivity extends AppCompatActivity {
     User user = null;
     User FF = null;
-    private static final String TAG = "MapActivity";
+    boolean mBound = false;
+    MyService mService;
+    MyService startMservice;
+    private static final String TAG = "Profile";
     private YourService mSensorService;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
     private Boolean mLocationPermissionsGranted = false;
+    Timer timer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +63,74 @@ public class ProfileActivity extends AppCompatActivity {
         setOnclickListeners();
         startServiceOnce();
 
+
     }
+
+    private void getUserFromService(){
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(mBound){
+                    if(mService.getUser()!=null&&!mService.getUser().equals(user)) {
+                        user = mService.getUser();
+                        Log.d("Profile", "New changed User arrived");
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Log.d("UI thread", "Set User prefs");
+                                new Preferences(getApplicationContext()).setUserPrefs(user);
+                            }
+                        });
+                    }
+                    else
+                        Log.d("Profile","Empty or equals User arrived");
+                }
+            }
+        }, 1, Constants.RECEIVE_TIMER);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, MyService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        getUserFromService();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(mConnection);
+        mBound = false;
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            MyService.LocalBinder binder = (MyService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+
 
 
     private void setOnclickListeners() {
@@ -61,7 +143,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
                 intent.putExtra("user", user);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -79,7 +161,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 intent.putExtra("user", user);
-                startActivityForResult(intent, 1);
+                startActivity(intent);
             }
         });
     }
@@ -102,13 +184,17 @@ public class ProfileActivity extends AppCompatActivity {
             Intent mServiceIntent = new Intent(getApplicationContext(), mSensorService.getClass());
             startService(mServiceIntent);
         }
+        if (!isMyServiceRunning(MyService.class)) {
+            startMservice = new MyService();
+            Intent mServiceIntent = new Intent(getApplicationContext(), startMservice.getClass());
+            startService(mServiceIntent);
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("userrr","AAAAAAAAAAAAA");
-        if (requestCode == 1) {
+        if (requestCode == 1 || requestCode==2) {
             if (resultCode == Activity.RESULT_OK) {
                 Log.d("userrr","FFFFFFFFFFFFFFFFFFFFFF");
                 User neww = (User) data.getSerializableExtra("user");

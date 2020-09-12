@@ -45,7 +45,7 @@
 
         <ImageButton
             android:id="@+id/addSubordinate"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:backgroundTint="#DDCE4D"
             android:src="@drawable/ic_baseline_add_24"

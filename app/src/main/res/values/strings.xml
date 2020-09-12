@@ -17,7 +17,8 @@
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_auto_login">AutoLoginActivity</string>
     <string name="addSubordinate">ADD</string>
-    <string name="password">Password(Save last)</string>
+    <string name="password">Password</string>
+    <string name="passwordLast">Password(Save last)</string>
     <string name="subordinate_id">Subbordinate Id</string>
     <string name="service_name">Stay In Touch</string>
     <string name="title_activity_settings">SettingsActivity</string>
@@ -39,4 +40,6 @@
     <string name="watch_enabled">Watch enabled</string>
     <string name="settings">SETTINGS</string>
     <string name="my_account">MY ACCOUNT</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
 </resources>

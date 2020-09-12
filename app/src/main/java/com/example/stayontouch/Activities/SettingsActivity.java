@@ -1,6 +1,7 @@
 package com.example.stayontouch.Activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,21 +41,13 @@ public class SettingsActivity extends AppCompatActivity {
                 preferences.setUserPrefs(user);
                 User Test = preferences.getUserPrefs();
 
-                Log.d("userrr",Test.toString());
+                Log.d("userrr","from settings prefs "+Test.toString());
 
 //                todo save user in preferences
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("user",user);
-        setResult(Activity.RESULT_OK,returnIntent);
-        this.finish();
-    }
 
     private void returnResult(Boolean b){
         if(b){
@@ -81,14 +74,39 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-    public static class SettingsFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey);
+    private class UserUpdater extends AsyncTask<Void, Void, Void> {
+        User usr;
+        Context context;
+        public UserUpdater(Context context,  User user) {
+            this.usr = user;
+            this.context = context;
         }
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Preferences preferences = new Preferences(context);
+            preferences.setUserPrefs(usr);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onConnectionResult();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        onConnectionResult();
+        super.onBackPressed();
+    }
+
+    private void onConnectionResult() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("user", user);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 }

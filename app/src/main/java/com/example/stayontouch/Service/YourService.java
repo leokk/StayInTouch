@@ -29,6 +29,7 @@ import androidx.core.app.NotificationCompat;
 import com.example.stayontouch.Activities.MapsActivity;
 import com.example.stayontouch.Activities.ProfileActivity;
 import com.example.stayontouch.R;
+import com.example.stayontouch.Utils.Constants;
 import com.example.stayontouch.web.RetrofitWrapper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -175,7 +176,7 @@ public class YourService extends Service implements LocationListener {
 
             }
         };
-        timer.schedule(timerTask, 1,1000 * 1000); //todo change period
+        timer.schedule(timerTask, 1, Constants.PREMIUM_SEND_TIMER); //todo change period
     }
 
     public void stoptimertask() {

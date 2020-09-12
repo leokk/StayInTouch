@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,15 +18,20 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.stayontouch.Dialogs.AddSubordinateDialog;
 import com.example.stayontouch.Entitie.User;
 import com.example.stayontouch.R;
+import com.example.stayontouch.Utils.Constants;
+import com.example.stayontouch.Utils.Preferences;
 import com.example.stayontouch.Utils.ServiceChecker;
 import com.example.stayontouch.web.RetrofitWrapper;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements AddSubordinateDialog.AddSubordinateDialogListener {
 
     private static final String TAG = "MainActivity";
     private User user;
-    private boolean result;
-
+    private boolean isUserChanged = false;
+    private Timer timer;
     public void showToast(final String Text) {
         this.runOnUiThread(new Runnable() {
             @Override
@@ -77,6 +83,27 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
         }
     }
 
+    private void getUserFromPrefs(){
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    User temp = new Preferences(getApplicationContext()).getUserPrefs();
+                    if(temp!=null && !temp.equals(user)){
+                        user = temp;
+                        isUserChanged = true;
+                    }
+
+                }catch (RuntimeException e){
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, 0, Constants.RECEIVE_TIMER);
+    }
+
     private void setAddSubordinateButtonClickListener(){
         ImageButton btn = (ImageButton) findViewById(R.id.addSubordinate);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -97,10 +124,10 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
     private void dynamicUIDraw(){
 
-        final LinearLayout lm = (LinearLayout) findViewById(R.id.linearMain);
+        final LinearLayout lm = findViewById(R.id.linearMain);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT,1.0f);
 
         //Create four
         for (User u : user.getSubordinates()) {
@@ -110,8 +137,10 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
             // Create Button
             final Button btn = new Button(this);
-
+            final ImageButton imageButton = new ImageButton(this);
 //            btn.setId();
+            imageButton.setImageResource(R.drawable.ic_baseline_delete_24);
+            imageButton.setForegroundGravity(Gravity.RIGHT);
 
             btn.setText(u.getFirstName() + "   " + u.getLastName());
             // set the layoutParams on the button
@@ -124,18 +153,26 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
                     Log.i("TAG", "opening :" + btn.getText());
 
                     Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                    intent.putExtra("user", user);
+                    intent.putExtra("user", u);
                     startActivity(intent);
 
                     Toast.makeText(getApplicationContext(),
                             "Clicked Button Index :" + btn.getText(),
                             Toast.LENGTH_LONG).show();
+                }
+            });
 
+            imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    user.getSubordinates().remove(u);
+                    new RemoveSub().execute();
                 }
             });
 
             //Add button to LinearLayout
             ll.addView(btn);
+            ll.addView(imageButton);
             //Add button to LinearLayout defined in XML
             lm.addView(ll);
         }
@@ -168,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
 
 
 
+
     private class SubordinateToServer extends AsyncTask<Void, Void, Void> {
 
         private boolean result;
@@ -175,9 +213,37 @@ public class MainActivity extends AppCompatActivity implements AddSubordinateDia
         @Override
         protected Void doInBackground(Void... params) {
             RetrofitWrapper wrapper = new RetrofitWrapper();
-            user = wrapper.addSubordinates(user);
-            if(user.getMessage()==0)
+            User usr = wrapper.addSubordinates(user);
+            Log.d("subs","Returned user is:" + usr.toString());
+            if(usr.getMessage()==0){
                 result = true;
+                user = usr;
+            }
+            else
+                result = false;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onConnectionResult(result);
+        }
+    }
+
+    private class RemoveSub extends AsyncTask<Void, Void, Void> {
+
+        private boolean result;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            RetrofitWrapper wrapper = new RetrofitWrapper();
+            User usr = wrapper.updateUser(user);
+            Log.d("subs","Returned user is:" + usr.toString());
+            if(usr.getMessage()==0){
+                result = true;
+                user = usr;
+            }
             else
                 result = false;
             return null;

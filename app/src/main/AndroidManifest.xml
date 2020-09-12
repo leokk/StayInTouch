@@ -46,8 +46,6 @@
 
         <!--Service-->
         <service
-            android:launchMode="singleTop"
-            android:process=":gpsProcess"
             android:name=".Service.MyService"
             android:icon="@drawable/logo"
             android:label="@string/service_name" />

@@ -19,6 +19,8 @@
 
         <EditText
             android:id="@+id/fName"
+            style="@style/BigText"
+            android:hint="@string/first_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -27,28 +29,43 @@
 
         <EditText
             android:id="@+id/lName"
+            android:hint="@string/last_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:ems="20"
-
+            style="@style/BigText"
             android:inputType="textPersonName" />
 
-        <EditText
-            android:id="@+id/password"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordLayout"
             android:layout_width="match_parent"
+            app:boxBackgroundMode="filled"
+            app:boxBackgroundColor="#ffffff"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            style="@style/AppTheme"
             android:ems="20"
-            android:hint="@string/password"
-            android:inputType="numberPassword" />
+            app:passwordToggleEnabled="true">
+
+
+            <EditText
+                style="@style/BigText"
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:ems="20"
+                android:hint="@string/password"
+                android:inputType="numberPassword"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/submitSettingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:ems="20"
             android:text="@string/submit" />
     </LinearLayout>
 

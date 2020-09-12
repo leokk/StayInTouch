@@ -14,7 +14,7 @@ public class Preferences extends AppCompatActivity {
     private final SharedPreferences sharedpreferences;
 
     public Preferences(Context context) {
-        sharedpreferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+        sharedpreferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_MULTI_PROCESS);
     }
 
     public User getUserPrefs() {
@@ -32,13 +32,13 @@ public class Preferences extends AppCompatActivity {
 //        prefsEditor.putString("User", json);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("user", json);
-        editor.commit();
+        editor.apply();
     }
 
     public void clearUser() {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.remove("user");
-        editor.commit();
+        editor.apply();
     }
 
 

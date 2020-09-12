@@ -56,8 +56,11 @@ public class AddSubordinateDialog extends AppCompatDialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String _password = password.getText().toString();
-                Long _id = Long.parseLong(String.valueOf(id.getText()));
-                listener.addSubordinate(_id,_password);
+                if(id.getText()!=null&&password.getText()!=null){
+                    Long _id = Long.parseLong(String.valueOf(id.getText()));
+                    listener.addSubordinate(_id,_password);
+                }
+
             }
         });
 

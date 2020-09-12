@@ -28,10 +28,17 @@ public class InitialActivity extends AppCompatActivity {
 
     private void onConnectionResult(boolean result){
         if(result){
-            Intent intent = new Intent(InitialActivity.this, ProfileActivity.class);
-            intent.putExtra("user", user);
-            startActivity(intent);
-            finish();
+            if(this.user.getFirstName()==null||this.user.getLastName()==null){
+                Intent intent = new Intent(InitialActivity.this, ProfileSettingsActivity.class);
+                intent.putExtra("user", user);
+                startActivity(intent);
+                finish();
+            }else {
+                Intent intent = new Intent(InitialActivity.this, ProfileActivity.class);
+                intent.putExtra("user", user);
+                startActivity(intent);
+                finish();
+            }
         }
         else{
             showToast("Trying to reconnect");
@@ -39,6 +46,11 @@ public class InitialActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
